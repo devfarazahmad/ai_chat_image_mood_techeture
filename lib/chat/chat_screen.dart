@@ -3,8 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aiiamge/view_model/chat_view_model.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Scroll to bottom after the first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +46,11 @@ class ChatScreen extends StatelessWidget {
         appBar: AppBar(title: const Text('Psychic Advisor'), centerTitle: true),
         body: Consumer<ChatViewModel>(
           builder: (context, viewModel, child) {
+            // Scroll to bottom when messages change
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToBottom();
+            });
+
             return Column(
               children: [
                 // Date header
@@ -28,6 +65,7 @@ class ChatScreen extends StatelessWidget {
                 // Chat messages
                 Expanded(
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(16),
                     reverse: false,
                     itemCount: viewModel.messages.length,
@@ -83,8 +121,10 @@ class ChatScreen extends StatelessWidget {
                                       vertical: 14,
                                     ),
                                   ),
-                                  onSubmitted: (text) =>
-                                      viewModel.sendMessage(),
+                                  onSubmitted: (text) {
+                                    viewModel.sendMessage();
+                                    _scrollToBottom();
+                                  },
                                 ),
                               ),
 
@@ -123,7 +163,10 @@ class ChatScreen extends StatelessWidget {
                         child: IconButton(
                           icon: const Icon(Icons.send),
                           color: Colors.blue,
-                          onPressed: () => viewModel.sendMessage(),
+                          onPressed: () {
+                            viewModel.sendMessage();
+                            _scrollToBottom();
+                          },
                         ),
                       ),
                     ],
@@ -139,7 +182,7 @@ class ChatScreen extends StatelessWidget {
 
   Widget _buildMessageBubble(ChatMessage message) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: message.isUser
             ? CrossAxisAlignment.end

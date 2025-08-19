@@ -13,28 +13,24 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFF5F0FF), // Very light purple
-                Color.fromARGB(255, 197, 173, 205), // Pure white
-              ],
+            image: DecorationImage(
+              image: AssetImage('assets/images/bg_home_screen.png'),
+              fit: BoxFit.cover,
             ),
           ),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(context),
                     const SizedBox(height: 24),
                     _buildQuoteSection(),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 12),
                     _buildFeatureGrid(context),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 4),
                     _buildRecentChatsSection(),
                   ],
                 ),
@@ -83,7 +79,6 @@ class HomeScreen extends StatelessWidget {
               'Hi Aqsa',
               style: TextStyle(
                 fontSize: 22,
-                // fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
@@ -121,29 +116,33 @@ class HomeScreen extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      childAspectRatio: 1,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
+      childAspectRatio: 0.8, // Increased aspect ratio for larger cards
+      mainAxisSpacing: 0.01,
+      crossAxisSpacing: 4,
       children: [
         _buildFeatureCard(
           title: 'Capture Aura',
           subtitle: 'tag line text here',
           imagePath: 'assets/images/camera.png',
+          backgroundImagePath: 'assets/images/home_fc.png',
         ),
         _buildFeatureCard(
           title: 'Upload Image',
           subtitle: 'tag line text here',
           imagePath: 'assets/images/basil_image-solid.png',
+          backgroundImagePath: 'assets/images/home_fc.png',
         ),
         _buildFeatureCard(
           title: 'Psychic Advisor',
           subtitle: 'tag line text here',
           imagePath: 'assets/images/Group.png',
+          backgroundImagePath: 'assets/images/home_fc.png',
         ),
         _buildFeatureCard(
           title: 'My Last Readings',
           subtitle: 'tag line text here',
           imagePath: 'assets/images/user-reading-filled.png',
+          backgroundImagePath: 'assets/images/home_fc.png',
         ),
       ],
     );
@@ -153,17 +152,14 @@ class HomeScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required String imagePath,
+    required String backgroundImagePath,
   }) {
     return Container(
+      height: 180, // Fixed height for larger cards
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color.fromARGB(255, 70, 27, 145), // Light purple
-            Color.fromARGB(255, 255, 255, 255), // White
-          ],
-          stops: [0.0, 0.6],
+        image: DecorationImage(
+          image: AssetImage(backgroundImagePath),
+          fit: BoxFit.cover,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -176,28 +172,28 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0), // Increased padding
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               imagePath,
-              width: 40,
-              height: 40,
+              width: 48, // Increased icon size
+              height: 48,
               errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.error, size: 40, color: Colors.purple),
+                  const Icon(Icons.error, size: 48, color: Colors.purple),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               title,
               style: const TextStyle(
-                fontSize: 15,
+                fontSize: 16, // Slightly larger font
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               subtitle,
               style: const TextStyle(fontSize: 14, color: Colors.black54),
@@ -220,95 +216,92 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'Recent Chats',
                   style: TextStyle(
-                    fontSize: 19,
+                    fontSize: 20, // Slightly larger font
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
                 ),
                 const Spacer(),
-               GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ChatScreen()),
-    );
-  },
-  child: Image.asset(
-    'assets/images/guidance_left-arrow.png',
-    width: 24,
-    height: 24,
-  ),
-),
-
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatScreen(),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    'assets/images/guidance_left-arrow.png',
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             ...viewModel.recentChats.map(
               (chat) => Container(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: const LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Color.fromARGB(255, 153, 109, 201), // Strong purple
-                        Colors.white, // White
-                      ],
-                      stops: [0.1, 0.3], // Hard stop at 30%
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
+                width: double.infinity,
+                height: 90, // Increased height for chat cards
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/chat_Card.png'),
+                    fit: BoxFit.cover,
+                    
                   ),
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          chat['question'] ?? "No Question",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                // padding: const EdgeInsets.all(20), // Increased padding
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        chat['question'] ?? "No Question",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${chat['date'] ?? ""},', // Add comma after date
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.7),
-                                  fontSize: 12,
-                                ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${chat['date'] ?? ""},',
+                              style: TextStyle(
+                                color: Colors.black.withOpacity(0.7),
+                                fontSize: 12,
                               ),
-                              Text(
-                                chat['time'] ?? "",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.7),
-                                  fontSize: 12,
-                                ),
+                            ),
+                            Text(
+                              chat['time'] ?? "",
+                              style: TextStyle(
+                                color: Colors.black.withOpacity(0.7),
+                                fontSize: 1,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
